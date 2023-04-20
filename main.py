@@ -1,6 +1,3 @@
-import functools
-
-
 class LRUCache(object):
     _storage = {}
     _max_data_size = None
@@ -16,6 +13,7 @@ class LRUCache(object):
     @classmethod
     def put(cls, key, data):
         if len(cls._storage.keys()) > cls._max_data_size:
+            # TODO Implement deletion according to records order
             record_to_delete = min(cls._storage.keys())
             del cls._storage[record_to_delete]
         cls._storage[key] = data
@@ -40,6 +38,8 @@ class LRUCache(object):
     def __get_args_hash(args):
         parts = []
         for i, val in enumerate(args):
+            # arg hash format: argNo_argClass_argVal
+            # TODO Check built-in "hash()" function to minimize long strings impact
             parts.append(f'{i}_{val.__class__}_{val}')
         return '__'.join(parts)
 
@@ -47,6 +47,8 @@ class LRUCache(object):
     def __get_kwargs_hash(kwargs):
         parts = []
         for i in sorted(kwargs.keys()):
+            # kwarg hash format: argNo_argClass_argName_argVal
+            # TODO Check built-in "hash()" function to minimize long strings impact
             arg = kwargs[i]
             parts.append(f'{arg.__class__}_{arg.__name__}_{i}')
         return '_'.join(parts)
@@ -68,11 +70,7 @@ def test_fn3(a, b, c):
 
 
 if __name__ == "__main__":
-
     res = test_fn1(5)
     res = test_fn1(3)
     res = test_fn2(3)
     res = test_fn1(5)
-
-    print("Hello, world!")
-    print(type({}))
