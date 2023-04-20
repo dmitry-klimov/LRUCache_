@@ -1,23 +1,23 @@
 class LRUCache(object):
-    _storage = {}
-    _max_data_size = None
-    _record_counter = 0
+    __storage = {}
+    __max_storage_size = None
+    __record_counter = 0
 
-    def __init__(self, max_data_size):
-        self.__class__._max_data_size = max_data_size
+    def __init__(self, max_storage_size):
+        self.__class__.__max_storage_size = max_storage_size
 
     @classmethod
     def get(cls, key):
-        return cls._storage[key]
+        return cls.__storage[key]
 
     @classmethod
     def put(cls, key, data):
-        if len(cls._storage.keys()) > cls._max_data_size:
+        if len(cls.__storage.keys()) > cls.__max_storage_size:
             # TODO Implement deletion according to records order
-            record_to_delete = min(cls._storage.keys())
-            del cls._storage[record_to_delete]
-        cls._storage[key] = data
-        cls._record_counter += 1
+            record_to_delete = min(cls.__storage.keys())
+            del cls.__storage[record_to_delete]
+        cls.__storage[key] = data
+        cls.__record_counter += 1
 
     @staticmethod
     def _get_hash(func, args, kwargs):
@@ -47,10 +47,10 @@ class LRUCache(object):
     def __get_kwargs_hash(kwargs):
         parts = []
         for i in sorted(kwargs.keys()):
-            # kwarg hash format: argNo_argClass_argName_argVal
+            # kwarg hash format: argName_argClass_argVal
             # TODO Check built-in "hash()" function to minimize long strings impact
             arg = kwargs[i]
-            parts.append(f'{arg.__class__}_{arg.__name__}_{i}')
+            parts.append(f'{arg.__name__}_{arg.__class__}_{i}')
         return '_'.join(parts)
 
 
