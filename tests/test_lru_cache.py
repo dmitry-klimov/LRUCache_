@@ -16,10 +16,6 @@ def test_max_storage_sizes():
 
         res = func()
 
-    assert LRUCache._LRUCache__max_storage_size == 2
-    assert len(LRUCache._LRUCache__keys_queue) == 0
-    assert len(LRUCache._LRUCache__storage) == 0
-
     with pytest.raises(AssertionError):
         @LRUCache(0)
         def func():
@@ -31,9 +27,11 @@ def test_max_storage_sizes():
     def func():
         pass
 
-    res = func()
+    assert LRUCache._LRUCache__max_storage_size == 1
+    assert len(LRUCache._LRUCache__keys_queue) == 0
+    assert len(LRUCache._LRUCache__storage) == 0
 
-def test_no_arguments_cached_call():
+def test_no_arguments():
     @LRUCache(2)
     def no_args_fn():
         return 12345
@@ -53,7 +51,7 @@ def test_no_arguments_cached_call():
     assert len(LRUCache._LRUCache__storage) == 1
 
 
-def test_single_argument_cached_call():
+def test_single_argument():
     @LRUCache(2)
     def single_arg_fn(arg):
         return arg
@@ -79,7 +77,7 @@ def test_single_argument_cached_call():
     assert len(LRUCache._LRUCache__storage) == 2
     assert next_new_key == LRUCache._LRUCache__keys_queue[0]
 
-def test_two_named_args():
+def test_two_named_arguments():
     @LRUCache(2)
     def two_named_args_fn(**kwargs):
         return '|'.join(kwargs)
@@ -113,7 +111,7 @@ def test_same_func_name_diff_paths():
     assert len(LRUCache._LRUCache__storage) == 2
 
 
-def test_multiple_arguments_cached_call():
+def test_multiple_arguments():
     @LRUCache(2)
     def multiple_args_fn(arg1, arg2, arg3=5):
         return arg1 + arg2 + arg3
@@ -139,4 +137,7 @@ def test_multiple_arguments_cached_call():
     assert len(LRUCache._LRUCache__storage) == 2
     assert next_new_key == LRUCache._LRUCache__keys_queue[0]
 
-
+    res = multiple_args_fn(2, arg2=6)
+    assert len(LRUCache._LRUCache__keys_queue) == 2
+    assert len(LRUCache._LRUCache__storage) == 2
+    assert next_new_key == LRUCache._LRUCache__keys_queue[0]
