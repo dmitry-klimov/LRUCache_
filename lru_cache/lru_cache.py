@@ -30,6 +30,7 @@ class LRUCache(object):
     @classmethod
     def __delete_first_record(cls):
         del cls.__storage[cls.__keys_queue.pop(0)]
+
     @staticmethod
     def _get_key(func, args, kwargs):
         return f'{func}_{LRUCache.__get_args_hash(args)}_{LRUCache.__get_kwargs_hash(kwargs)}'
@@ -49,7 +50,7 @@ class LRUCache(object):
     def __get_args_hash(args):
         parts = []
         for i, value in enumerate(args):
-            # arg hash format: argNo_argClass_argVal
+            # arg hash format: argNo_argClass_argVal_argHash
             try:
                 parts.append(f'{i}_{value.__class__}_{value}_{hash(value)}')
             except TypeError:
@@ -61,11 +62,11 @@ class LRUCache(object):
     def __get_kwargs_hash(kwargs):
         parts = []
         for key in sorted(kwargs.keys()):
-            # kwarg hash format: argName_argClass_argVal
+            # kwarg hash format: argName_argClass_argVal_argHash
             value = kwargs[key]
             try:
                 parts.append(f'{key}_{value.__class__}_{value}_{hash(value)}')
             except TypeError:
                 parts.append(f'{key}_{value.__class__}_{value}')
 
-        return '_'.join(parts)
+        return '__'.join(parts)
