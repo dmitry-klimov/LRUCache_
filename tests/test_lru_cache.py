@@ -1,4 +1,8 @@
+from copy import deepcopy
+
 import pytest
+import typing
+
 from lru_cache import LRUCache
 import tests.func_set1
 import tests.func_set2
@@ -141,3 +145,29 @@ def test_multiple_arguments():
     assert len(LRUCache._LRUCache__keys_queue) == 2
     assert len(LRUCache._LRUCache__storage) == 2
     assert next_new_key == LRUCache._LRUCache__keys_queue[0]
+
+def test_mutable_arguments():
+    was_calculated = 0
+    @LRUCache(2)
+    def func_for_list(arg: typing.List) -> int:
+        nonlocal was_calculated
+        was_calculated += 1
+        return sum(arg)
+
+    arg = [1, 2, 3]
+    # key - something like
+    # "<function test_mutable_arguments.<locals>.func_for_list at 0x0000022B8384B250>_0_<class 'list'>_[1, 2, 3]_"
+    assert func_for_list(arg) == 6
+    assert len(LRUCache._LRUCache__keys_queue) == 1
+    assert len(LRUCache._LRUCache__storage) == 1
+    assert was_calculated == 1
+
+    old_arg = deepcopy(arg)
+    arg[0] = 9
+    assert func_for_list(arg) == 14
+    assert len(LRUCache._LRUCache__keys_queue) == 2
+    assert len(LRUCache._LRUCache__storage) == 2
+    assert was_calculated == 2
+
+    assert func_for_list(old_arg) == 6
+    assert func_for_list(arg) == 14
