@@ -62,7 +62,6 @@ class LRUCache(object):
         parts = []
         for key in sorted(kwargs.keys()):
             # kwarg hash format: argName_argClass_argVal
-            # TODO Check built-in "hash()" function to minimize super-long strings impact
             value = kwargs[key]
             try:
                 parts.append(f'{key}_{value.__class__}_{value}_{hash(value)}')
