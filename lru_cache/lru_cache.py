@@ -48,10 +48,13 @@ class LRUCache(object):
     @staticmethod
     def __get_args_hash(args):
         parts = []
-        for i, val in enumerate(args):
+        for i, value in enumerate(args):
             # arg hash format: argNo_argClass_argVal
-            # TODO Check built-in "hash()" function to minimize super-long strings impact
-            parts.append(f'{i}_{val.__class__}_{val}')
+            try:
+                parts.append(f'{i}_{value.__class__}_{value}_{hash(value)}')
+            except TypeError:
+                parts.append(f'{i}_{value.__class__}_{value}')
+
         return '__'.join(parts)
 
     @staticmethod
@@ -61,5 +64,9 @@ class LRUCache(object):
             # kwarg hash format: argName_argClass_argVal
             # TODO Check built-in "hash()" function to minimize super-long strings impact
             value = kwargs[key]
-            parts.append(f'{key}_{value.__class__}_{value}')
+            try:
+                parts.append(f'{key}_{value.__class__}_{value}_{hash(value)}')
+            except TypeError:
+                parts.append(f'{key}_{value.__class__}_{value}')
+
         return '_'.join(parts)

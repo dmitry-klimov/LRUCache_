@@ -146,7 +146,7 @@ def test_multiple_arguments():
     assert len(LRUCache._LRUCache__storage) == 2
     assert next_new_key == LRUCache._LRUCache__keys_queue[0]
 
-def test_mutable_arguments():
+def test_standard_mutable_arguments():
     was_calculated = 0
     @LRUCache(2)
     def func_for_list(arg: typing.List) -> int:
@@ -170,4 +170,40 @@ def test_mutable_arguments():
     assert was_calculated == 2
 
     assert func_for_list(old_arg) == 6
+    assert was_calculated == 2
     assert func_for_list(arg) == 14
+    assert was_calculated == 2
+
+def test_custom_mutable_arguments():
+    class A(object):
+        def __init__(self, arg):
+            self.data = arg
+
+    was_calculated = 0
+    @LRUCache(2)
+    def func_for_list(arg: A) -> int:
+        nonlocal was_calculated
+        was_calculated += 1
+        return arg.data
+
+    arg_1 = A(1)
+    arg_9 = deepcopy(arg_1)
+    arg_9.data = 9
+    assert arg_1.data == 1
+    assert arg_9.data == 9
+
+    assert func_for_list(arg_1) == 1
+    assert len(LRUCache._LRUCache__keys_queue) == 1
+    assert len(LRUCache._LRUCache__storage) == 1
+    assert was_calculated == 1
+
+    assert func_for_list(arg_9) == 9
+    assert len(LRUCache._LRUCache__keys_queue) == 2
+    assert len(LRUCache._LRUCache__storage) == 2
+    assert was_calculated == 2
+
+    assert func_for_list(arg_1) == 1
+    assert was_calculated == 2
+    assert func_for_list(arg_9) == 9
+    assert was_calculated == 2
+
